@@ -1,0 +1,13 @@
+# Temporary files
+*~
+*.ba?k
+*#*
+*.swp
+
+# Editor files
+.vscode
+
+# Python files
+*.egg-info
+*.pyc
+__pycache__

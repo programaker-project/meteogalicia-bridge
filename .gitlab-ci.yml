@@ -1,0 +1,18 @@
+image: docker:latest
+
+variables:
+  DOCKER_IMAGE: plaza-meteogalicia-bridge
+
+services:
+  - docker:dind
+
+build_and_push:
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE .
+    - docker tag $DOCKER_IMAGE "$CI_REGISTRY"/"$CI_PROJECT_PATH":$CI_COMMIT_SHA
+    - docker push  "$CI_REGISTRY"/"$CI_PROJECT_PATH":$CI_COMMIT_SHA
+  only:
+    - develop
+    - master
