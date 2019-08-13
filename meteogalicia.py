@@ -6,6 +6,8 @@ import urllib.request
 from plaza_bridge import (
     PlazaBridge,  # Import bridge functionality
     CallbackBlockArgument,  # Needed for argument definition
+    VariableBlockArgument,
+    BlockContext,
 )
 
 bridge = PlazaBridge(
@@ -34,9 +36,9 @@ def get_locations(extra_data):
     arguments=[
         CallbackBlockArgument(str, get_locations),
     ],
-    block_result_type=str,  # The result is another integer
+    block_result_type=str,
 )
-def get_prediction(place_code, extra_data):
+def get_max_prediction(place_code, extra_data):
     # Getter logic
     r = urllib.request.urlopen("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(place_code))
     data = json.loads(r.read())
@@ -48,13 +50,29 @@ def get_prediction(place_code, extra_data):
     arguments=[
         CallbackBlockArgument(str, get_locations),
     ],
-    block_result_type=str,  # The result is another integer
+    block_result_type=str,
 )
-def get_prediction(place_code, extra_data):
+def get_min_prediction(place_code, extra_data):
     # Getter logic
     r = urllib.request.urlopen("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(place_code))
     data = json.loads(r.read())
     return data['predConcello']['listaPredDiaConcello'][0]['tMin']
+
+
+@bridge.operation(
+    id="get_all_data_from_place",
+    message="Get all data for %1. Save to %2",
+    arguments=[
+        CallbackBlockArgument(str, get_locations),
+        VariableBlockArgument(list),
+    ],
+    save_to=BlockContext.ARGUMENTS[1],
+)
+def get_all_prediction(place_code, extra_data):
+    # Getter logic
+    r = urllib.request.urlopen("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(place_code))
+    data = json.loads(r.read())
+    return data['predConcello']['listaPredDiaConcello']
 
 
 if __name__ == '__main__':
