@@ -52,7 +52,7 @@ def sky_code_to_emoji(sky_code):
         # 120: '',
         # 121: '',
 
-        201: '🌞',
+        201: '🌠🌛🌠',
         # 202: '',
         203: '🌤',
         # 204: '',
@@ -62,7 +62,7 @@ def sky_code_to_emoji(sky_code):
         # 208: '',
         # 209: '',
         # 210: '',
-        211: '🌧',
+        211: '🌧🌛🌧',
         # 212: '',
         # 213: '',
         # 214: '',
@@ -73,7 +73,7 @@ def sky_code_to_emoji(sky_code):
         # 219: '',
         # 220: '',
         # 221: '',
-    }.get(sky_code, '???')
+    }.get(sky_code, '❓')
 
 @bridge.callback
 def get_locations(extra_data):
@@ -115,15 +115,19 @@ def get_formatted_prediction(place_code, extra_data):
     data = json.loads(r.read())['predConcello']
     pred = data['listaPredDiaConcello'][0]
     return (
-        "{location}:\n"
-        "Temperatura: {min_temp}ºC-{max_temp}ºC\n"
-        "Ceo: {sky_morning}/{sky_noon}/{sky_night}\n"
-        "__________________________________________________\n"
+        "Predicción para hoxe en {location}:\n"
+        "Min: {min_temp}ºC - Max: {max_temp}ºC\n"
+        "Ceo: {sky_morning} - {sky_noon} - {sky_night}\n"
+        "Prob choiva: {rain_morning}% - {rain_evening}% - {rain_night}%\n"
+        "____________________________\n" # Max characters with 28 
         "Información obtida de https://www.meteogalicia.gal"
     ).format(
         location=data['nome'],
         min_temp=pred['tMin'],
         max_temp=pred['tMax'],
+        rain_morning=pred['pchoiva']['manha'],
+        rain_evening=pred['pchoiva']['tarde'],
+        rain_night=pred['pchoiva']['noite'],
         sky_morning=sky_code_to_emoji(pred['ceo']['manha']),
         sky_noon=sky_code_to_emoji(pred['ceo']['tarde']),
         sky_night=sky_code_to_emoji(pred['ceo']['noite']),
