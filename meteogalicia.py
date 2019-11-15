@@ -10,8 +10,7 @@ from plaza_bridge import (
     BlockContext,
 )
 
-REQUEST_CACHE = DailyRequestCache(reset_times=(
-    DailyTime(hour=0),
+REQUEST_CACHE = DailyRequestCache(extra_reset_times=(
     DailyTime(hour=4),
 ))
 

@@ -5,7 +5,7 @@ import logging
 import traceback
 
 DailyTime = collections.namedtuple('DailyTime', ('hour'))
-CachingEntry = collections.namedtuple('CachingEntry', ('time', 'result'))
+CachingEntry = collections.namedtuple('CachingEntry', ('hour', 'day', 'result'))
 
 RETRY_NUM = 3
 SLEEP_BETWEEN_RETRIES = 10
@@ -15,32 +15,41 @@ def get_current_utc_hour():
     return int(time.strftime('%H', time.gmtime()))
 
 
+def get_current_day():
+    return time.strftime('%Y-%m-%d')
+
+
 class DailyRequestCache:
-    def __init__(self, reset_times):
+    def __init__(self, extra_reset_times):
         self.reset_times = []
         self.requests = {}
 
-    def not_expired(self, entry):
+    def is_expired(self, entry):
+        if entry.day != get_current_day():
+            return True
+
         hour = get_current_utc_hour()
         for rt in self.reset_times:
-            if entry.time < rt.hour <= hour:
-                return False
-        return True
+            if entry.hour < rt.hour <= hour:
+                return True
+        return False
 
     def request(self, endpoint):
         # I know this is not ideal, and might be problematic with
         # multithreading. That will be solved if it's deemed a problem.
         if endpoint in self.requests:
             entry = self.requests[endpoint]
-            if self.not_expired(entry):
+            if not self.is_expired(entry):
                 return entry.result
 
         error = None
         for i in range(RETRY_NUM):
             try:
+                result = urllib.request.urlopen(endpoint).read()
                 self.requests[endpoint] = CachingEntry(
-                    time=get_current_utc_hour(),
-                    result=urllib.request.urlopen(endpoint).read())
+                    hour=get_current_utc_hour(),
+                    day=get_current_day(),
+                    result=result)
 
                 return self.requests[endpoint].result
 
@@ -49,4 +58,3 @@ class DailyRequestCache:
                 logging.warning(traceback.format_exc())
                 time.sleep(SLEEP_BETWEEN_RETRIES)
         raise error
-
