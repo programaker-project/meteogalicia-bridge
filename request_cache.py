@@ -1,9 +1,14 @@
 import urllib.request
 import time
 import collections
+import logging
+import traceback
 
 DailyTime = collections.namedtuple('DailyTime', ('hour'))
 CachingEntry = collections.namedtuple('CachingEntry', ('time', 'result'))
+
+RETRY_NUM = 3
+SLEEP_BETWEEN_RETRIES = 10
 
 
 def get_current_utc_hour():
@@ -23,15 +28,25 @@ class DailyRequestCache:
         return True
 
     def request(self, endpoint):
+        # I know this is not ideal, and might be problematic with
+        # multithreading. That will be solved if it's deemed a problem.
         if endpoint in self.requests:
             entry = self.requests[endpoint]
             if self.not_expired(entry):
                 return entry.result
 
-        # I know this is not ideal, and might be problematic with
-        # multithreading. That will be solved if it's deemed a problem.
-        self.requests[endpoint] = CachingEntry(
-            time=get_current_utc_hour(),
-            result=urllib.request.urlopen(endpoint).read())
+        error = None
+        for i in range(RETRY_NUM):
+            try:
+                self.requests[endpoint] = CachingEntry(
+                    time=get_current_utc_hour(),
+                    result=urllib.request.urlopen(endpoint).read())
 
-        return self.requests[endpoint].result
+                return self.requests[endpoint].result
+
+            except Exception as ex:
+                error = ex
+                logging.warning(traceback.format_exc())
+                time.sleep(SLEEP_BETWEEN_RETRIES)
+        raise error
+
