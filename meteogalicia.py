@@ -82,6 +82,7 @@ def sky_code_to_emoji(sky_code):
 
 @bridge.callback
 def get_locations(extra_data):
+    logging.debug('[CBK] GET locations')
     return LOCATIONS
 
 @bridge.getter(
@@ -94,6 +95,7 @@ def get_locations(extra_data):
 )
 def get_max_prediction(place_code, extra_data):
     # Getter logic
+    logging.info('[GET] GET max prediction')
     return get_all_prediction(place_code, extra_data)[0]['tMax']
 
 @bridge.getter(
@@ -105,10 +107,12 @@ def get_max_prediction(place_code, extra_data):
     block_result_type=str,
 )
 def get_min_prediction(place_code, extra_data):
+    logging.info('[GET] GET min prediction')
     return get_all_prediction(place_code, extra_data)[0]['tMin']
 
 @bridge.callback
 def get_map_days_from_now(extra_data):
+    logging.debug('[CBK] GET days from now')
     return [
         {'id': '0', 'name': 'Today'},
         {'id': '1', 'name': 'Tomorrow'},
@@ -118,6 +122,7 @@ def get_map_days_from_now(extra_data):
 
 @bridge.callback
 def get_map_day_time(extra_data):
+    logging.debug('[CBK] GET days time')
     return [
         {'id': '1', 'name': 'Morning'},
         {'id': '2', 'name': 'Noon'},
@@ -134,6 +139,7 @@ def get_map_day_time(extra_data):
     block_result_type=str,
 )
 def get_total_map(days_from_now, day_time, extra_data):
+    logging.info('[GET] GET today map')
     code_from_day_time = {
         '1': 'M',
         '2': 'T',
@@ -155,6 +161,8 @@ def get_total_map(days_from_now, day_time, extra_data):
     block_result_type=str,
 )
 def get_formatted_prediction(place_code, extra_data):
+    logging.info('[GET] GET formatted prediction')
+
     r = REQUEST_CACHE.request("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(place_code))
     data = json.loads(r)['predConcello']
     pred = data['listaPredDiaConcello'][0]
@@ -188,6 +196,7 @@ def get_formatted_prediction(place_code, extra_data):
     save_to=BlockContext.ARGUMENTS[1],
 )
 def get_all_prediction(place_code, extra_data):
+    logging.info('[GET] GET full prediction')
     # Getter logic
     r = REQUEST_CACHE.request("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}"
                               .format(place_code))
