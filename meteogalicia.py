@@ -1,7 +1,7 @@
 import os
 import logging
 import json
-import urllib.request
+from request_cache import DailyRequestCache, DailyTime
 
 from plaza_bridge import (
     PlazaBridge,  # Import bridge functionality
@@ -9,6 +9,11 @@ from plaza_bridge import (
     VariableBlockArgument,
     BlockContext,
 )
+
+REQUEST_CACHE = DailyRequestCache(reset_times=(
+    DailyTime(hour=0),
+    DailyTime(hour=4),
+))
 
 bridge = PlazaBridge(
     name="Meteogalicia",
@@ -150,8 +155,8 @@ def get_total_map(days_from_now, day_time, extra_data):
     block_result_type=str,
 )
 def get_formatted_prediction(place_code, extra_data):
-    r = urllib.request.urlopen("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(place_code))
-    data = json.loads(r.read())['predConcello']
+    r = REQUEST_CACHE.request("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(place_code))
+    data = json.loads(r)['predConcello']
     pred = data['listaPredDiaConcello'][0]
     return (
         "Predicción para hoxe en {location}:\n"
@@ -184,8 +189,9 @@ def get_formatted_prediction(place_code, extra_data):
 )
 def get_all_prediction(place_code, extra_data):
     # Getter logic
-    r = urllib.request.urlopen("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(place_code))
-    data = json.loads(r.read())
+    r = REQUEST_CACHE.request("http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}"
+                              .format(place_code))
+    data = json.loads(r)
     return data['predConcello']['listaPredDiaConcello']
 
 
