@@ -102,6 +102,45 @@ def get_max_prediction(place_code, extra_data):
 def get_min_prediction(place_code, extra_data):
     return get_all_prediction(place_code, extra_data)[0]['tMin']
 
+@bridge.callback
+def get_map_days_from_now(extra_data):
+    return [
+        {'id': '0', 'name': 'Today'},
+        {'id': '1', 'name': 'Tomorrow'},
+        {'id': '2', 'name': 'In two days'},
+        {'id': '3', 'name': 'In three days'},
+    ]
+
+@bridge.callback
+def get_map_day_time(extra_data):
+    return [
+        {'id': '1', 'name': 'Morning'},
+        {'id': '2', 'name': 'Noon'},
+        {'id': '3', 'name': 'Night'},
+    ]
+
+@bridge.getter(
+    id="get_today_map",
+    message="Get map for %1 %2",
+    arguments=[
+        CallbackBlockArgument(str, get_map_days_from_now),
+        CallbackBlockArgument(str, get_map_day_time),
+    ],
+    block_result_type=str,
+)
+def get_total_map(days_from_now, day_time, extra_data):
+    code_from_day_time = {
+        '1': 'M',
+        '2': 'T',
+        '3': 'N',
+    }[day_time]
+
+    return ('http://servizos.meteogalicia.gal/rss/predicion/cprazo/getImaxe'
+            + code_from_day_time
+            + '.action?dia='
+            + str(days_from_now))
+
+
 @bridge.getter(
     id="formatted_prediction_in_place",
     message="Format today's prediction %1",
