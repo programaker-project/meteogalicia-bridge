@@ -16,7 +16,7 @@ REQUEST_CACHE = DailyRequestCache(extra_reset_times=(
 
 bridge = PlazaBridge(
     name="Meteogalicia",
-    endpoint=os.environ['BRIDGE_ENDPOINT'],
+    endpoint=os.getenv('BRIDGE_ENDPOINT', None) or open('bridge_url.txt').read().strip(),
     is_public=True,
 )
 
