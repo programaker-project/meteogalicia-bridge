@@ -14,9 +14,12 @@ REQUEST_CACHE = DailyRequestCache(extra_reset_times=(
     DailyTime(hour=4),
 ))
 
+ASSET_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
+
 bridge = PlazaBridge(
     name="Meteogalicia",
-    endpoint=os.environ['BRIDGE_ENDPOINT'],
+    endpoint=os.getenv('BRIDGE_ENDPOINT', None) or open('bridge_url.txt').read().strip(),
+    icon=open(os.path.join(ASSET_DIRECTORY, 'logo_meteogalicia.png'), 'rb'),
     is_public=True,
 )
 
@@ -170,7 +173,7 @@ def get_formatted_prediction(place_code, extra_data):
         "Min: {min_temp}ºC - Max: {max_temp}ºC\n"
         "Ceo: {sky_morning} - {sky_noon} - {sky_night}\n"
         "Prob choiva: {rain_morning}% - {rain_evening}% - {rain_night}%\n"
-        "____________________________\n" # Max characters with 28 
+        "____________________________\n" # Max characters with 28
         "Información obtida de https://www.meteogalicia.gal"
     ).format(
         location=data['nome'],
