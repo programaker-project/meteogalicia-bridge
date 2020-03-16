@@ -26,12 +26,13 @@ bridge = PlazaBridge(
 # Get location codes
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                        "locations.txt")) as f:
-    LOCATIONS = {}
+    LOCATIONS = []
     LOCATIONS_FORM_NAME = {}
     for line in f.read().strip().split('\n'):
         id, place = line.strip().split(" ", 1)
-        LOCATIONS[id] = {"name": place}
+        LOCATIONS.append({"id": id, "name": place})
 
+    LOCATIONS.sort(key=lambda x: x['name'])
 
 def sky_code_to_emoji(sky_code):
     return {
