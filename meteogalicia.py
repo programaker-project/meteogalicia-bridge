@@ -197,6 +197,7 @@ def get_formatted_prediction(place_code, extra_data):
         .format(place_code))
     data = json.loads(r)['predConcello']
     pred = data['listaPredDiaConcello'][0]
+
     return ("Predicción para hoxe en {location}:\n"
             "Min: {min_temp}ºC - Max: {max_temp}ºC\n"
             "Ceo: {sky_morning} - {sky_noon} - {sky_night}\n"
@@ -206,9 +207,9 @@ def get_formatted_prediction(place_code, extra_data):
                 location=data['nome'],
                 min_temp=pred['tMin'],
                 max_temp=pred['tMax'],
-                rain_morning=pred['pchoiva']['manha'],
-                rain_evening=pred['pchoiva']['tarde'],
-                rain_night=pred['pchoiva']['noite'],
+                rain_morning=in_range(pred['pchoiva']['manha'], 0, 100),
+                rain_evening=in_range(pred['pchoiva']['tarde'], 0, 100),
+                rain_night=in_range(pred['pchoiva']['noite'], 0, 100),
                 sky_morning=sky_code_to_emoji(pred['ceo']['manha']),
                 sky_noon=sky_code_to_emoji(pred['ceo']['tarde']),
                 sky_night=sky_code_to_emoji(pred['ceo']['noite']),
@@ -232,6 +233,13 @@ def get_all_prediction(place_code, extra_data):
         .format(place_code))
     data = json.loads(r)
     return data['predConcello']['listaPredDiaConcello']
+
+
+### Utils
+def in_range(data, range_min, range_max, out_of_range_value='[erro]'):
+    if data < range_min or data > range_max:
+        return out_of_range_value
+    return data
 
 
 if __name__ == '__main__':
