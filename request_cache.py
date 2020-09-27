@@ -31,6 +31,7 @@ class SimpleRequestCache:
         for i in range(RETRY_NUM):
             try:
                 result = urllib.request.urlopen(endpoint).read()
+                logging.info("Request [{}]: {}".format(endpoint, result))
                 self.requests[endpoint] = CachingEntry(time=time.time(),
                                                        result=result)
 
