@@ -1,38 +1,23 @@
-import urllib.request
-import time
 import collections
 import logging
+import time
 import traceback
+import urllib.request
 
-DailyTime = collections.namedtuple('DailyTime', ('hour'))
-CachingEntry = collections.namedtuple('CachingEntry', ('hour', 'day', 'result'))
+CachingEntry = collections.namedtuple('CachingEntry', ('time', 'result'))
 
 RETRY_NUM = 3
 SLEEP_BETWEEN_RETRIES = 10
 
 
-def get_current_utc_hour():
-    return int(time.strftime('%H', time.gmtime()))
-
-
-def get_current_day():
-    return time.strftime('%Y-%m-%d')
-
-
-class DailyRequestCache:
-    def __init__(self, extra_reset_times):
-        self.reset_times = []
+class SimpleRequestCache:
+    def __init__(self, request_timeout):
+        self.request_timeout = request_timeout
         self.requests = {}
 
     def is_expired(self, entry):
-        if entry.day != get_current_day():
-            return True
-
-        hour = get_current_utc_hour()
-        for rt in self.reset_times:
-            if entry.hour < rt.hour <= hour:
-                return True
-        return False
+        # Is expired is more than `request_timeout` seconds passed
+        return (entry.time + self.request_timeout) < time.time()
 
     def request(self, endpoint):
         # I know this is not ideal, and might be problematic with
@@ -46,10 +31,8 @@ class DailyRequestCache:
         for i in range(RETRY_NUM):
             try:
                 result = urllib.request.urlopen(endpoint).read()
-                self.requests[endpoint] = CachingEntry(
-                    hour=get_current_utc_hour(),
-                    day=get_current_day(),
-                    result=result)
+                self.requests[endpoint] = CachingEntry(time=time.time(),
+                                                       result=result)
 
                 return self.requests[endpoint].result
 

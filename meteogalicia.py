@@ -6,9 +6,12 @@ from plaza_bridge import \
     CallbackBlockArgument  # Needed for argument definition
 from plaza_bridge import PlazaBridge  # Import bridge functionality
 from plaza_bridge import BlockContext, VariableBlockArgument
-from request_cache import DailyRequestCache, DailyTime
+from request_cache import SimpleRequestCache
 
-REQUEST_CACHE = DailyRequestCache(extra_reset_times=(DailyTime(hour=4), ))
+CACHE_TIME = os.getenv('CACHE_TIME',
+                       10 * 60)  # By default reset every 10 minutes
+
+REQUEST_CACHE = SimpleRequestCache(CACHE_TIME)
 
 ASSET_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'assets')
@@ -192,7 +195,6 @@ def get_formatted_prediction(place_code, extra_data):
     r = REQUEST_CACHE.request(
         "http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}"
         .format(place_code))
-    print("DATA:", json.dumps(json.loads(r), indent=4))
     data = json.loads(r)['predConcello']
     pred = data['listaPredDiaConcello'][0]
     return ("Predicción para hoxe en {location}:\n"
