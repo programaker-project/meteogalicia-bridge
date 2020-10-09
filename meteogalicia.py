@@ -18,8 +18,10 @@ ASSET_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 bridge = PlazaBridge(
     name="Meteogalicia",
-    endpoint=os.getenv('BRIDGE_ENDPOINT', None)
-    or open('bridge_url.txt').read().strip(),
+    endpoint=(os.getenv('BRIDGE_ENDPOINT', None)
+              or open('bridge_url.txt').read().strip()),
+    token=(os.getenv('PLAZA_BRIDGE_AUTH_TOKEN', None)
+           or open('token.txt').read().strip()),
     icon=open(os.path.join(ASSET_DIRECTORY, 'logo_meteogalicia.png'), 'rb'),
     is_public=True,
 )

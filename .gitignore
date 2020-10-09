@@ -14,3 +14,4 @@ __pycache__
 
 # Secret files
 bridge_url.txt
+token.txt

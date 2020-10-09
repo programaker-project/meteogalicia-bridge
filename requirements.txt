@@ -1,2 +1,2 @@
-# Plaza bridge wrapper
-plaza-bridge
+# Programaker bridge wrapper
+programaker-bridge
