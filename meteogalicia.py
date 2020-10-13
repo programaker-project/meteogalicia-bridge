@@ -2,10 +2,10 @@ import json
 import logging
 import os
 
-from plaza_bridge import \
+from programaker_bridge import \
     CallbackBlockArgument  # Needed for argument definition
-from plaza_bridge import PlazaBridge  # Import bridge functionality
-from plaza_bridge import BlockContext, VariableBlockArgument
+from programaker_bridge import ProgramakerBridge  # Import bridge functionality
+from programaker_bridge import BlockContext, VariableBlockArgument
 from request_cache import SimpleRequestCache
 
 CACHE_TIME = os.getenv('CACHE_TIME',
@@ -16,11 +16,11 @@ REQUEST_CACHE = SimpleRequestCache(CACHE_TIME)
 ASSET_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'assets')
 
-bridge = PlazaBridge(
+bridge = ProgramakerBridge(
     name="Meteogalicia",
     endpoint=(os.getenv('BRIDGE_ENDPOINT', None)
               or open('bridge_url.txt').read().strip()),
-    token=(os.getenv('PLAZA_BRIDGE_AUTH_TOKEN', None)
+    token=(os.getenv('PROGRAMAKER_BRIDGE_AUTH_TOKEN', None)
            or open('token.txt').read().strip()),
     icon=open(os.path.join(ASSET_DIRECTORY, 'logo_meteogalicia.png'), 'rb'),
     is_public=True,
