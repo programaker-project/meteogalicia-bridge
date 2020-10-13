@@ -1,7 +1,7 @@
 image: docker:latest
 
 variables:
-  DOCKER_IMAGE: plaza-meteogalicia-bridge
+  DOCKER_IMAGE: programaker-meteogalicia-bridge
 
 services:
   - docker:dind
