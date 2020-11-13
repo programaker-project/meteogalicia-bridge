@@ -4,7 +4,7 @@ import time
 import traceback
 import urllib.request
 
-CachingEntry = collections.namedtuple('CachingEntry', ('time', 'result'))
+CachingEntry = collections.namedtuple("CachingEntry", ("time", "result"))
 
 RETRY_NUM = 3
 SLEEP_BETWEEN_RETRIES = 10
@@ -32,8 +32,7 @@ class SimpleRequestCache:
             try:
                 result = urllib.request.urlopen(endpoint).read()
                 logging.info("Request [{}]: {}".format(endpoint, result))
-                self.requests[endpoint] = CachingEntry(time=time.time(),
-                                                       result=result)
+                self.requests[endpoint] = CachingEntry(time=time.time(), result=result)
 
                 return self.requests[endpoint].result
 
