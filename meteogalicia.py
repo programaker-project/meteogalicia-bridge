@@ -179,8 +179,12 @@ def get_total_map(days_from_now, day_time, extra_data):
         '3': 'N',
     }[day_time]
 
-    return ('http://servizos.meteogalicia.gal/rss/predicion/cprazo/getImaxe' +
-            code_from_day_time + '.action?dia=' + str(days_from_now))
+    return (
+        "https://servizos.meteogalicia.gal/rss/predicion/cprazo/getImaxe"
+        + code_from_day_time
+        + ".action?dia="
+        + str(days_from_now)
+    )
 
 
 @bridge.getter(
@@ -195,8 +199,6 @@ def get_formatted_prediction(place_code, extra_data):
     logging.info('[GET] GET formatted prediction')
 
     r = REQUEST_CACHE.request(
-        "http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}"
-        .format(place_code))
     data = json.loads(r)['predConcello']
     pred = data['listaPredDiaConcello'][0]
 
@@ -216,6 +218,10 @@ def get_formatted_prediction(place_code, extra_data):
                 sky_noon=sky_code_to_emoji(pred['ceo']['tarde']),
                 sky_night=sky_code_to_emoji(pred['ceo']['noite']),
             )
+        "https://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(
+            place_code
+        )
+    )
 
 
 @bridge.operation(
@@ -231,8 +237,10 @@ def get_all_prediction(place_code, extra_data):
     logging.info('[GET] GET full prediction')
     # Getter logic
     r = REQUEST_CACHE.request(
-        "http://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}"
-        .format(place_code))
+        "https://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(
+            place_code
+        )
+    )
     data = json.loads(r)
     return data['predConcello']['listaPredDiaConcello']
 
