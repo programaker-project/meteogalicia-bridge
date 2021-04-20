@@ -196,11 +196,11 @@ def get_formatted_prediction(place_code, extra_data):
     )
 
 
-@bridge.operation(
-    id="get_all_data_from_place",
-    message="Get all data for %1. Save to %2",
-    arguments=[CallbackBlockArgument(str, get_locations), VariableBlockArgument(list),],
-    save_to=BlockContext.ARGUMENTS[1],
+@bridge.getter(
+    id="get_all_data_from_place_1_",
+    message="Get all data for %1",
+    arguments=[CallbackBlockArgument(str, get_locations)],
+    block_result_type=list,
 )
 def get_all_prediction(place_code, extra_data):
     logging.info("[GET] GET full prediction")
@@ -212,6 +212,17 @@ def get_all_prediction(place_code, extra_data):
     )
     data = json.loads(r)
     return data["predConcello"]["listaPredDiaConcello"]
+
+
+@bridge.operation(
+    id="get_all_data_from_place",
+    message="Get all data for %1. Save to %2",
+    arguments=[CallbackBlockArgument(str, get_locations), VariableBlockArgument(list)],
+    show_in_toolbox=False,
+    save_to=BlockContext.ARGUMENTS[1],
+)
+def get_all_prediction1(place_code, extra_data):
+    return get_all_prediction(place_code, extra_data)
 
 
 ### Utils
