@@ -152,7 +152,7 @@ def get_total_map(days_from_now, day_time, extra_data):
     code_from_day_time = {"1": "M", "2": "T", "3": "N",}[day_time]
 
     return (
-        "https://servizos.meteogalicia.gal/rss/predicion/cprazo/getImaxe"
+        "https://servizos.meteogalicia.gal/mgrss/predicion/cprazo/getImaxe"
         + code_from_day_time
         + ".action?dia="
         + str(days_from_now)
@@ -169,7 +169,7 @@ def get_formatted_prediction(place_code, extra_data):
     logging.info("[GET] GET formatted prediction")
 
     r = REQUEST_CACHE.request(
-        "https://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(
+        "https://servizos.meteogalicia.gal/mgrss/predicion/jsonPredConcellos.action?idConc={}".format(
             place_code
         )
     )
@@ -206,7 +206,7 @@ def get_all_prediction(place_code, extra_data):
     logging.info("[GET] GET full prediction")
     # Getter logic
     r = REQUEST_CACHE.request(
-        "https://servizos.meteogalicia.gal/rss/predicion/jsonPredConcellos.action?idConc={}".format(
+        "https://servizos.meteogalicia.gal/mgrss/predicion/jsonPredConcellos.action?idConc={}".format(
             place_code
         )
     )
